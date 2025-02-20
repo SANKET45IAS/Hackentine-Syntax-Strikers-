@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+        h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff7eb3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff4f81;
+        }
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #ff7eb3;
+        }
+        .toggle-mode {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #fff;
+        }
+        /* Dark Mode */
+        .dark-mode {
+            background: linear-gradient(135deg, #232526, #414345);
+        }
+        .dark-mode .container {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .dark-mode input {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .dark-mode a, .dark-mode .toggle-mode {
+            color: #ff7eb3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="example@.com" required>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="password" required>
+
+        <button type="submit" id="login">Login</button>
+    </form>
+
+    <p><a href="forgot-password.html" id="forgot-password">Forgot Password?</a></p>
+    <p><a href="register.html">Create New Account</a></p>
+
+    <script type="module">
+        import userData from './data.js';
+
+        // Login function
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let emailInput = document.getElementById("email").value;
+            let passwordInput = document.getElementById("password").value;
+
+            // Check if the email exists in user data
+            let emailIndex = userData.email.indexOf(emailInput);
+
+            if (emailIndex === -1) {
+                alert("No account found with this email! Please register.");
+                window.location.href = "register.html"; // Redirect to register page
+                return;
+            }
+
+            // If email exists, check the password
+            if (userData.password[emailIndex] === passwordInput) {
+                // Successful login
+                alert("Login successful!");
+                window.location.href = "profile.html"; // Redirect to profile page
+            } else {
+                alert("Incorrect password! Please try again.");
+            }
+        });
+
+        // Forgot password functionality (simulated)
+        document.getElementById("forgot-password").addEventListener("click", function(e) {
+            e.preventDefault();
+
+            let emailInput = prompt("Enter your email to reset your password:");
+
+            let emailIndex = userData.email.indexOf(emailInput);
+
+            if (emailIndex === -1) {
+                alert("No account found with this email!");
+            } else {
+                // Simulate sending a password reset link
+                alert(`Password reset link has been sent to ${emailInput}`);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 2px;
+        }
+        input, select {
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>User Management System</h2>
+    <button onclick="clearAllUsers()">Clear All Users</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Unique ID</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Gender</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+
+    <script>
+        // Load user data from localStorage
+        const userData = {
+            uniqueId: JSON.parse(localStorage.getItem("uniqueId")) || [],
+            Name: JSON.parse(localStorage.getItem("Name")) || [],
+            DOB: JSON.parse(localStorage.getItem("DOB")) || [],
+            email: JSON.parse(localStorage.getItem("email")) || [],
+            password: JSON.parse(localStorage.getItem("password")) || [],
+            Gender: JSON.parse(localStorage.getItem("Gender")) || []
+        };
+
+        function saveUserData() {
+            localStorage.setItem("uniqueId", JSON.stringify(userData.uniqueId));
+            localStorage.setItem("Name", JSON.stringify(userData.Name));
+            localStorage.setItem("DOB", JSON.stringify(userData.DOB));
+            localStorage.setItem("email", JSON.stringify(userData.email));
+            localStorage.setItem("password", JSON.stringify(userData.password));
+            localStorage.setItem("Gender", JSON.stringify(userData.Gender));
+            console.log("User Data Saved:", userData);
+        }
+
+        function displayUsers() {
+            let userTable = document.getElementById("userTable");
+            userTable.innerHTML = ""; // Clear previous data
+
+            for (let i = 0; i < userData.uniqueId.length; i++) {
+                let row = `<tr>
+                    <td>${userData.uniqueId[i]}</td>
+                    <td><input type="text" value="${userData.Name[i]}" id="name-${i}"></td>
+                    <td><input type="date" value="${userData.DOB[i]}" id="dob-${i}"></td>
+                    <td><input type="email" value="${userData.email[i]}" id="email-${i}"></td>
+                    <td><input type="text" value="${userData.password[i]}" id="password-${i}"></td>
+                    <td>
+                        <select id="gender-${i}">
+                            <option value="Male" ${userData.Gender[i] === "Male" ? "selected" : ""}>Male</option>
+                            <option value="Female" ${userData.Gender[i] === "Female" ? "selected" : ""}>Female</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button onclick="updateUser(${i})">Update</button>
+                        <button onclick="deleteUser(${i})">Delete</button>
+                    </td>
+                </tr>`;
+                userTable.innerHTML += row;
+            }
+        }
+
+        function updateUser(index) {
+            userData.Name[index] = document.getElementById(`name-${index}`).value;
+            userData.DOB[index] = document.getElementById(`dob-${index}`).value;
+            userData.email[index] = document.getElementById(`email-${index}`).value;
+            userData.password[index] = document.getElementById(`password-${index}`).value;
+            userData.Gender[index] = document.getElementById(`gender-${index}`).value;
+
+            saveUserData();
+            alert("User data updated successfully!");
+        }
+
+        function deleteUser(index) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                userData.uniqueId.splice(index, 1);
+                userData.Name.splice(index, 1);
+                userData.DOB.splice(index, 1);
+                userData.email.splice(index, 1);
+                userData.password.splice(index, 1);
+                userData.Gender.splice(index, 1);
+
+                saveUserData();
+                displayUsers();
+            }
+        }
+
+        function clearAllUsers() {
+            if (confirm("This will remove all user data. Are you sure?")) {
+                localStorage.removeItem("uniqueId");
+                localStorage.removeItem("Name");
+                localStorage.removeItem("DOB");
+                localStorage.removeItem("email");
+                localStorage.removeItem("password");
+                localStorage.removeItem("Gender");
+
+                userData.uniqueId = [];
+                userData.Name = [];
+                userData.DOB = [];
+                userData.email = [];
+                userData.password = [];
+                userData.Gender = [];
+
+                displayUsers();
+            }
+        }
+
+        displayUsers(); // Display users on page load
+    </script>
+
+</body>
+</html>

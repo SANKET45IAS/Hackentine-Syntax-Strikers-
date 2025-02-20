@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management</title>
+    <style>
+        .Top {
+            background-color: #030303;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 10px rgba(221, 221, 221, 0.1);
+            border-radius: 20px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #292828;
+            color: #f69090;
+            margin: 0;
+            padding: 20px;
+            max-width:2000px;
+        }
+        h2, h3 {
+            color:white;
+            text-shadow: #1ae0ff;
+        }
+        .form-container {
+            background-color: black;
+            padding: 20px;
+            margin: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input{
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0056b3;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #003d80;
+        }
+        table styling/
+        .div3 {
+            background-color: #000000;
+            margin: 30px;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2{
+            text-align:center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f66b1b;
+            font-weight: bold;
+            color:white;
+        }
+        td{
+            background-color:rgb(228, 244, 205);
+            color:rgb(20, 20, 245);
+        }
+        tr:nth-child(even) td {
+            background-color: #d7f4e1;
+        }
+        #submitButton {
+            background-color: #0bc80e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            border: none;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #submitButton:hover{
+            background-color: green;
+            font-weight:1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="Top">
+        <h2>Date: <strong id="date"></strong> &nbsp; Time: <strong id="time"></strong></h2>
+        <h3>Motivation: <strong id="motivated"></strong></h3>
+    </div>
+
+    <div class="form-container">
+        <h3>Initialize Project</h3>
+        <form id="initializeForm">
+            <label for="projectName">Project Name:</label>
+            <input type="text" id="projectName" required><br><br>
+
+            <label for="startDateTime">Start Date & Time:</label>
+            <input type="date" id="startDate" required>
+            <input type="time" id="startTime" required><br><br>
+            
+            <label for="endDateTime">End Date & Time:</label>
+            <input type="date" id="endDate" required>
+            <input type="time" id="endTime" required><br><br>
+            <br><br>
+
+            <button type="submit">Initialize Project</button>
+        </form>
+
+        <h3>Add Project Details</h3>
+        <form id="projectDetailsForm">
+            <label for="projectTopic">Project Topic:</label>
+            <input type="text" id="projectTopic" required><br><br>
+
+            <label for="projectDesc">Description:</label>
+            <textarea id="projectDesc" required></textarea><br><br>
+
+            <label for="teamMemberName">Team Member Name:</label>
+            <input type="text" id="teamMemberName" required><br><br>
+
+            <button type="submit">Add Details</button>
+            <button type="button" id="newProjectButton">New Project</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Project List</h3>
+        <table id="projectTable">
+            <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Start Date</th>
+                    <th>Start Time</th>
+                    <th>End Date</th>
+                    <th>End Time</th>
+                    <th>Topic</th>
+                    <th>Description</th>
+                    <th>Team Member</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <button id="submitButton">Submit All Projects</button>
+
+    <script>
+        // Date and Time Display
+        let date = document.getElementById('date');
+        let currentDate = new Date();
+        let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let dayOfWeek = daysOfWeek[currentDate.getDay()];
+        let formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${currentDate.getFullYear()} (${dayOfWeek})`;
+        date.innerText = formattedDate;
+
+        let time = document.getElementById('time');
+        function updateTime() {
+            let currentTime = new Date().toLocaleTimeString();
+            time.innerText = currentTime;
+        }
+        setInterval(updateTime, 1000);
+
+        // Motivation Quote
+        const motivations = [
+            "Work hard, don't worry about the result.",
+            "Believe in yourself and all that you are.",
+            "You are stronger than you think.",
+            "Success is the sum of small efforts, repeated day in and day out.",
+            "The only way to do great work is to love what you do.",
+            "Push yourself, because no one else is going to do it for you."
+        ];
+        let dayOfYear = currentDate.getDate();
+        let motivation = motivations[dayOfYear % motivations.length];
+        document.getElementById('motivated').innerText = motivation;
+
+        // Project Data
+        let projects = [];
+        let currentProject = null;
+
+        // Set minimum date for start and end date inputs
+        document.getElementById('startDate').setAttribute('min', currentDate.toISOString().split('T')[0]);
+        document.getElementById('endDate').setAttribute('min', currentDate.toISOString().split('T')[0]);
+
+        // Initialize Project Form
+        document.getElementById('initializeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let projectName = document.getElementById('projectName').value;
+            let startDate = document.getElementById('startDate').value;
+            let startHour = document.getElementById('startHour').value;
+            let startMinute = document.getElementById('startMinute').value;
+            let startAMPM = document.getElementById('startAMPM').value;
+            let endDate = document.getElementById('endDate').value;
+            let endHour = document.getElementById('endHour').value;
+            let endMinute = document.getElementById('endMinute').value;
+            let endAMPM = document.getElementById('endAMPM').value;
+
+            // Convert time to 24-hour format
+            let formattedStartTime = `${startHour}:${startMinute} ${startAMPM}`;
+            let formattedEndTime = `${endHour}:${endMinute} ${endAMPM}`;
+
+            // Create Date objects for validation
+            let startDateTime = new Date(`${startDate}T${startHour}:${startMinute}:00`);
+            let endDateTime = new Date(`${endDate}T${endHour}:${endMinute}:00`);
+
+            // Adjust for AM/PM
+            if (startAMPM === "PM" && startHour !== "12") {
+                startDateTime.setHours(startDateTime.getHours() + 12);
+            }
+            if (endAMPM === "PM" && endHour !== "12") {
+                endDateTime.setHours(endDateTime.getHours() + 12);
+            }
+            if (startAMPM === "AM" && startHour === "12") {
+                startDateTime.setHours(0);
+            }
+            if (endAMPM === "AM" && endHour === "12") {
+                endDateTime.setHours(0);
+            }
+
+            // Validate start date and time
+            if (startDateTime < new Date()) {
+                alert("Start date and time cannot be in the past!");
+                return;
+            }
+
+            // Validate end date and time
+            if (endDateTime < new Date()) {
+                alert("End date and time cannot be in the past!");
+                return;
+            }
+
+            // Validate end time is after start time
+            if (endDateTime <= startDateTime) {
+                alert("End time must be after the start time!");
+                return;
+            }
+
+            // Initialize the project
+            currentProject = {
+                projectName,
+                startDate,
+                startTime: formattedStartTime,
+                endDate,
+                endTime: formattedEndTime,
+                details: []
+            };
+
+            alert("Project initialized successfully!");
+        });
+
+        // Add Project Details Form
+        document.getElementById('projectDetailsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if (!currentProject) {
+                alert("Please initialize the project first!");
+                return;
+            }
+
+            let projectTopic = document.getElementById('projectTopic').value;
+            let projectDesc = document.getElementById('projectDesc').value;
+            let teamMemberName = document.getElementById('teamMemberName').value;
+
+            let newDetail = {
+                projectTopic,
+                projectDesc,
+                teamMember: teamMemberName
+            };
+
+            currentProject.details.push(newDetail);
+            updateProjectTable();
+            document.getElementById('projectDetailsForm').reset();
+        });
+
+        // New Project Button
+        document.getElementById('newProjectButton').addEventListener('click', function () {
+            if (currentProject) {
+                projects.push(currentProject);
+                currentProject = null;
+                document.getElementById('initializeForm').reset();
+                document.getElementById('projectDetailsForm').reset();
+                alert("New project can be initialized now.");
+            } else {
+                alert("No project to save. Please initialize a project first.");
+            }
+        });
+
+        // Update Project Table
+        function updateProjectTable() {
+            let tableBody = document.querySelector('#projectTable tbody');
+            tableBody.innerHTML = '';
+
+            if (currentProject) {
+                currentProject.details.forEach((detail, index) => {
+                    let row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${currentProject.projectName}</td>
+                        <td>${currentProject.startDate}</td>
+                        <td>${currentProject.startTime}</td>
+                        <td>${currentProject.endDate}</td>
+                        <td>${currentProject.endTime}</td>
+                        <td>${detail.projectTopic}</td>
+                        <td>${detail.projectDesc}</td>
+                        <td>${detail.teamMember}</td>
+                        <td>
+                            <button onclick="editDetail(${index})">Edit</button>
+                            <button onclick="deleteDetail(${index})">Delete</button>
+                        </td>
+                    `;
+                });
+            }
+
+            projects.forEach((project, projectIndex) => {
+                project.details.forEach((detail, detailIndex) => {
+                    let row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${project.projectName}</td>
+                        <td>${project.startDate}</td>
+                        <td>${project.startTime}</td>
+                        <td>${project.endDate}</td>
+                        <td>${project.endTime}</td>
+                        <td>${detail.projectTopic}</td>
+                        <td>${detail.projectDesc}</td>
+                        <td>${detail.teamMember}</td>
+                        <td>
+                            <button onclick="editDetail(${detailIndex}, ${projectIndex})">Edit</button>
+                            <button onclick="deleteDetail(${detailIndex}, ${projectIndex})">Delete</button>
+                        </td>
+                    `;
+                });
+            });
+        }
+
+        // Edit Detail
+        function editDetail(detailIndex, projectIndex = null) {
+            let project = projectIndex === null ? currentProject : projects[projectIndex];
+            let detail = project.details[detailIndex];
+
+            document.getElementById('projectTopic').value = detail.projectTopic;
+            document.getElementById('projectDesc').value = detail.projectDesc;
+            document.getElementById('teamMemberName').value = detail.teamMember;
+
+            if (projectIndex === null) {
+                currentProject.details.splice(detailIndex, 1);
+            } else {
+                projects[projectIndex].details.splice(detailIndex, 1);
+            }
+
+            updateProjectTable();
+        }
+
+        // Delete Detail
+        function deleteDetail(detailIndex, projectIndex = null) {
+            if (projectIndex === null) {
+                currentProject.details.splice(detailIndex, 1);
+            } else {
+                projects[projectIndex].details.splice(detailIndex, 1);
+            }
+
+            updateProjectTable();
+        }
+
+        // Submit All Projects
+        document.getElementById('submitButton').addEventListener('click', function () {
+            if (currentProject) {
+                projects.push(currentProject);
+                currentProject = null;
+            }
+            localStorage.setItem('projects', JSON.stringify(projects));
+            alert("Projects have been saved!");
+            window.location.href = "dashboard.html";
+        });
+    </script>
+</body>
+</html>

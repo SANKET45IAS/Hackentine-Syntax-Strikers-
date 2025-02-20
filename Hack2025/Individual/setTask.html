@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Form</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #8460ab, #f0f644);
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        table, th, td {
+            border: 1px solid white;
+            border-collapse: collapse;
+        }
+        table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            color: white;
+        }
+        .form-container {
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            width: 50%;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input, textarea, select {
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+        button {
+            background: #ff6200;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #56c600;
+        }
+        .time-date-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #myPlot {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="Top">
+        <h2>Date: <strong id="date"></strong> &nbsp;  Time: <strong id="time"></strong></h2>
+        <h3>Motivation: <strong id="motivated"></strong></h3>
+    </div>
+
+    <div class="form-container" style="background: linear-gradient(rgb(251, 243, 5),aqua);">
+        <h3>Add Task</h3>
+        <form id="taskForm">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" required><br><br>
+
+            <label for="taskDesc">Description:</label>
+            <textarea id="taskDesc" required></textarea><br><br>
+
+            <label for="startDateTime">Start Date and Time:</label>
+            <div class="time-date-container">
+                <input type="date" id="startDate" required>
+                <input type="number" id="startHour" placeholder="HH" min="1" max="12" required>
+                <input type="number" id="startMinute" placeholder="MM" min="0" max="59" required>
+                <select id="startAMPM" required>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div><br><br>
+
+            <label for="endDateTime">End Date and Time:</label>
+            <div class="time-date-container">
+                <input type="date" id="endDate" required>
+                <input type="number" id="endHour" placeholder="HH" min="1" max="12" required>
+                <input type="number" id="endMinute" placeholder="MM" min="0" max="59" required>
+                <select id="endAMPM" required>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div><br><br>
+
+            <button type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <div class="addTask">
+        <h3>Task List</h3>
+        <table id="taskTable">
+            <tr>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Start Date & Time</th>
+                <th>End Date & Time</th>
+                <th>Actions</th>
+            </tr>
+        </table>
+    </div>
+
+    <button id="submitButton" style="display: none;">Submit All Tasks</button>
+
+    <div id="myPlot" style="width:100%;max-width:700px"></div>
+
+    <script>
+        let date = document.getElementById('date');
+        let currentDate = new Date();
+        let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let dayOfWeek = daysOfWeek[currentDate.getDay()];
+        let formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${currentDate.getFullYear()} (${dayOfWeek})`;
+        date.innerText = formattedDate;
+
+        let time = document.getElementById('time');
+        function updateTime() {
+            let currentTime = new Date().toLocaleTimeString();
+            time.innerText = currentTime;
+        }
+        setInterval(updateTime, 1000);
+
+        const motivations = [
+            "Work hard, don't worry about the result.",
+            "Believe in yourself and all that you are.",
+            "You are stronger than you think.",
+            "Success is the sum of small efforts, repeated day in and day out.",
+            "The only way to do great work is to love what you do.",
+            "Push yourself, because no one else is going to do it for you."
+        ];
+
+        let dayOfYear = currentDate.getDate();
+        let motivation = motivations[dayOfYear % motivations.length];
+        document.getElementById('motivated').innerText = motivation;
+
+        let tasks = [];
+        let editingIndex = -1;
+
+        document.getElementById('startDate').setAttribute('min', currentDate.toISOString().split('T')[0]);
+        document.getElementById('endDate').setAttribute('min', currentDate.toISOString().split('T')[0]);
+
+        document.getElementById('taskForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let taskName = document.getElementById('taskName').value;
+            let taskDesc = document.getElementById('taskDesc').value;
+            let startDate = document.getElementById('startDate').value;
+            let startHour = document.getElementById('startHour').value;
+            let startMinute = document.getElementById('startMinute').value;
+            let startAMPM = document.getElementById('startAMPM').value;
+
+            let endDate = document.getElementById('endDate').value;
+            let endHour = document.getElementById('endHour').value;
+            let endMinute = document.getElementById('endMinute').value;
+            let endAMPM = document.getElementById('endAMPM').value;
+
+            // Validate start time
+            if (startHour < 1 || startHour > 12 || startMinute < 0 || startMinute > 59) {
+                alert("Please enter a valid start time.");
+                return;
+            }
+
+            // Validate end time
+            if (endHour < 1 || endHour > 12 || endMinute < 0 || endMinute > 59) {
+                alert("Please enter a valid end time.");
+                return;
+            }
+
+            // Convert start time to 24-hour format
+            if (startAMPM === "PM" && startHour !== "12") {
+                startHour = parseInt(startHour) + 12;
+            } else if (startAMPM === "AM" && startHour === "12") {
+                startHour = "00";
+            }
+
+            // Convert end time to 24-hour format
+            if (endAMPM === "PM" && endHour !== "12") {
+                endHour = parseInt(endHour) + 12;
+            } else if (endAMPM === "AM" && endHour === "12") {
+                endHour = "00";
+            }
+
+            let formattedStartTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+            let formattedEndTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+            let currentTime = new Date();
+            let taskStartDateTime = new Date(`${startDate}T${formattedStartTime}`);
+            let taskEndDateTime = new Date(`${endDate}T${formattedEndTime}`);
+
+            // Check if start time is in the past
+            if (taskStartDateTime < currentTime) {
+                alert("Start time cannot be in the past!");
+                return;
+            }
+
+            // Check if end time is before start time
+            if (taskEndDateTime <= taskStartDateTime) {
+                alert("End time must be after the start time!");
+                return;
+            }
+
+            let newTask = { taskName, taskDesc, startDate, startTime: formattedStartTime, endDate, endTime: formattedEndTime };
+
+            if (editingIndex === -1) {
+                tasks.push(newTask);
+            } else {
+                tasks[editingIndex] = newTask;
+                editingIndex = -1;
+            }
+
+            updateTaskTable();
+            updateChart();
+            document.getElementById('submitButton').style.display = 'inline';
+            document.getElementById('taskForm').reset();
+        });
+
+        function updateTaskTable() {
+            let taskTable = document.getElementById('taskTable');
+
+            taskTable.innerHTML = `
+                <tr>
+                    <th>Task</th>
+                    <th>Description</th>
+                    <th>Start Date & Time</th>
+                    <th>End Date & Time</th>
+                    <th>Actions</th>
+                </tr>
+            `;
+
+            tasks.forEach((task, index) => {
+                let row = taskTable.insertRow();
+                row.innerHTML = `
+                    <td>${task.taskName}</td>
+                    <td>${task.taskDesc}</td>
+                    <td>${task.startDate} ${task.startTime}</td>
+                    <td>${task.endDate} ${task.endTime}</td>
+                    <td>
+                        <button onclick="editTask(${index})">Edit</button>
+                        <button onclick="deleteTask(${index})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function editTask(index) {
+            let task = tasks[index];
+
+            document.getElementById('taskName').value = task.taskName;
+            document.getElementById('taskDesc').value = task.taskDesc;
+
+            let [startHour, startMinute] = task.startTime.split(':');
+            let startAMPM = startHour >= 12 ? "PM" : "AM";
+            if (startHour > 12) startHour -= 12;
+            if (startHour == 0) startHour = 12;
+
+            document.getElementById('startDate').value = task.startDate;
+            document.getElementById('startHour').value = startHour;
+            document.getElementById('startMinute').value = startMinute;
+            document.getElementById('startAMPM').value = startAMPM;
+
+            let [endHour, endMinute] = task.endTime.split(':');
+            let endAMPM = endHour >= 12 ? "PM" : "AM";
+            if (endHour > 12) endHour -= 12;
+            if (endHour == 0) endHour = 12;
+
+            document.getElementById('endDate').value = task.endDate;
+            document.getElementById('endHour').value = endHour;
+            document.getElementById('endMinute').value = endMinute;
+            document.getElementById('endAMPM').value = endAMPM;
+
+            editingIndex = index;
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            updateTaskTable();
+            updateChart();
+        }
+
+        function updateChart() {
+            let xArray = tasks.map(task => task.taskName);
+            let yArray = tasks.map(task => {
+                let startTime = new Date(`1970-01-01T${task.startTime}`);
+                let endTime = new Date(`1970-01-01T${task.endTime}`);
+                let duration = (endTime - startTime) / (1000 * 60); // Duration in minutes
+                return duration;
+            });
+
+            const layout = {title:"Task Duration Chart"};
+            const data = [{labels:xArray, values:yArray, type:"pie"}];
+
+            Plotly.newPlot("myPlot", data, layout);
+        }
+
+        document.getElementById('submitButton').addEventListener('click', function () {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            alert("Tasks have been saved!");
+            window.location.href = "dashBoard.html";
+        });
+
+        // Initial chart update
+        updateChart();
+    </script>
+</body>
+</html>

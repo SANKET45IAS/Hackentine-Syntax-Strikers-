@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      /* Custom styles */
+      body {
+            background: linear-gradient(to right, #ffffff, #ffeb3b);
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .task-table th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .task-table td {
+            background-color: #ffffff;
+        }
+
+        .task-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+
+        .task-card .task-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .task-card .task-end-time {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .task-card button {
+            margin-top: 5px;
+        }
+
+        .task-card .dropdown-content {
+            display: none;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .task-card .dropdown-content.show {
+            display: block;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Dashboard</h2>
+
+        <!-- Date and Time -->
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Date: <strong id="date"></strong></h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <h5>Time: <strong id="time"></strong></h5>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h4>Task List</h4>
+            <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+
+            <table class="table task-table mt-3">
+                <thead>
+                    <tr>
+                        <th>To-do</th>
+                        <th>In-Progress</th>
+                        <th>Done</th>
+                        <th>Incomplete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="todo"></td>
+                        <td id="inProgress"></td>
+                        <td id="done"></td>
+                        <td id="incomplete"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Display current date and time
+        let date = document.getElementById('date');
+        let currentDate = new Date();
+        let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let dayOfWeek = daysOfWeek[currentDate.getDay()];
+        let formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${currentDate.getFullYear()} (${dayOfWeek})`;
+        date.innerText = formattedDate;
+
+        let time = document.getElementById('time');
+        function updateTime() {
+            let currentTime = new Date().toLocaleTimeString();
+            time.innerText = currentTime;
+        }
+        setInterval(updateTime, 1000);
+
+        // Preload tasks into localStorage if empty
+        if (!localStorage.getItem('tasks')) {
+            let tasks = [
+                {
+                    taskName: "Home Work",
+                    taskDesc: "Physic",
+                    endDate: "2025-02-21",
+                    endTime: "10:00",
+                    status: "todo"
+                },
+                {
+                    taskName: "Home Work",
+                    taskDesc: "Math",
+                    endDate: "2025-02-21",
+                    endTime: "10:00",
+                    status: "todo"
+                }
+            ];
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Retrieve tasks from localStorage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Function to update the task table
+        function updateTaskTable() {
+            let todo = document.getElementById('todo');
+            let inProgress = document.getElementById('inProgress');
+            let done = document.getElementById('done');
+            let incomplete = document.getElementById('incomplete');
+
+            // Clear existing content
+            todo.innerHTML = '';
+            inProgress.innerHTML = '';
+            done.innerHTML = '';
+            incomplete.innerHTML = '';
+
+            // Loop through tasks and display them in the appropriate column
+            tasks.forEach((task, index) => {
+                let taskCard = document.createElement('div');
+                taskCard.className = 'card task-card';
+
+                // Task name
+                let taskName = document.createElement('div');
+                taskName.className = 'task-name';
+                taskName.innerText = task.taskName;
+                taskCard.appendChild(taskName);
+
+                // Description dropdown
+                let dropdown = document.createElement('button');
+                dropdown.className = 'btn btn-info btn-sm';
+                dropdown.innerText = 'Description';
+                dropdown.onclick = () => {
+                    let content = taskCard.querySelector('.dropdown-content');
+                    content.classList.toggle('show');
+                };
+                taskCard.appendChild(dropdown);
+
+                // Task description
+                let description = document.createElement('div');
+                description.className = 'dropdown-content';
+                description.innerText = task.taskDesc;
+                taskCard.appendChild(description);
+
+                // End time
+                let endTime = document.createElement('div');
+                endTime.className = 'task-end-time';
+                endTime.innerText = `End Time: ${task.endDate} ${task.endTime}`;
+                taskCard.appendChild(endTime);
+
+                // Add buttons and place task in the appropriate column based on status
+                if (!task.status || task.status === 'todo') {
+                    let startButton = document.createElement('button');
+                    startButton.className = 'btn btn-success btn-sm';
+                    startButton.innerText = 'Start';
+                    startButton.onclick = () => startTask(index);
+                    taskCard.appendChild(startButton);
+                    todo.appendChild(taskCard);
+                } else if (task.status === 'inProgress') {
+                    let timeLeft = document.createElement('div');
+                    let endTimeDate = new Date(`${task.endDate}T${task.endTime}`);
+                    let currentTime = new Date();
+                    let diff = endTimeDate - currentTime;
+                    let hours = Math.floor(diff / (1000 * 60 * 60));
+                    let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    timeLeft.className = 'time-left';
+                    timeLeft.innerText = `Time Left: ${hours}h ${minutes}m`;
+                    taskCard.appendChild(timeLeft);
+
+                    let endButton = document.createElement('button');
+                    endButton.className = 'btn btn-danger btn-sm';
+                    endButton.innerText = 'End';
+                    endButton.onclick = () => endTask(index);
+                    taskCard.appendChild(endButton);
+                    inProgress.appendChild(taskCard);
+                } else if (task.status === 'done') {
+                    let tick = document.createElement('span');
+                    tick.className = 'text-success';
+                    tick.innerText = '✅';
+                    taskCard.appendChild(tick);
+                    done.appendChild(taskCard);
+                } else if (task.status === 'incomplete') {
+                    let late = document.createElement('span');
+                    late.className = 'text-danger';
+                    late.innerText = 'Late';
+                    taskCard.appendChild(late);
+                    incomplete.appendChild(taskCard);
+                }
+            });
+        }
+
+        // Function to start a task
+        function startTask(index) {
+            tasks[index].status = 'inProgress';
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateTaskTable();
+        }
+
+        // Function to end a task
+        function endTask(index) {
+            let endTime = new Date(`${tasks[index].endDate}T${tasks[index].endTime}`);
+            let currentTime = new Date();
+            if (currentTime <= endTime) {
+                tasks[index].status = 'done';
+            } else {
+                tasks[index].status = 'incomplete';
+            }
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateTaskTable();
+        }
+
+        // Function to redirect to the task creation page
+        function addTask() {
+            window.location.href = 'setTask.html';
+        }
+
+        // Initial call to update the task table
+        updateTaskTable();
+    </script>
+</body>
+</html>

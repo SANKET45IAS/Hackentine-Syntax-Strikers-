@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+             body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+        h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff7eb3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff4f81;
+        }
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #ff7eb3;
+        }
+        .toggle-mode {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .dark-mode {
+            background: linear-gradient(135deg, #232526, #414345);
+        }
+        .dark-mode .container {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .dark-mode input {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .dark-mode a, .dark-mode .toggle-mode {
+            color: #ff7eb3;
+        }
+    </style>
+</head>
+<body>
+    <form id="registerForm">
+        <label for="name">Enter Your Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="DOB">Date of Birth:</label>
+        <input type="date" id="DOB" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="example@.com" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="password" required>
+
+        <legend>Gender:</legend>
+        <label for="male">Male:</label>
+        <input type="radio" name="gender" id="male" value="Male" required>
+
+        <label for="female">Female:</label>
+        <input type="radio" name="gender" id="female" value="Female" required>
+
+        <button type="submit">Register</button>
+    </form>
+    
+    <a href="login.html"><button type="button">Already have an account?</button></a>
+
+    <script type="module">
+        import userData, { saveUserData } from './data.js';
+
+        function generateUniqueId() {
+            let id;
+            do {
+                id = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit number
+            } while (userData.uniqueId.includes(id)); // Ensure uniqueness
+            
+            userData.uniqueId.push(id); // Only push here
+            return id;
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", (e) => {
+            e.preventDefault();  // Prevent default form submission
+
+            // Collect form data
+            let name = document.getElementById("name").value;
+            let dob = document.getElementById("DOB").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let gender = document.querySelector('input[name="gender"]:checked')?.value;
+
+            // Check if email already exists
+            if (userData.email.includes(email)) {
+                alert("Email already exists! Please log in.");
+                return;
+            }
+
+            // Generate unique ID and store user data
+            let id = generateUniqueId();
+            userData.Name.push(name);
+            userData.DOB.push(dob);
+            userData.email.push(email);
+            userData.password.push(password);
+            userData.Gender.push(gender);
+
+            // Save data persistently
+            saveUserData();
+
+            // ✅ Log updated userData to check if it was added
+            console.log("Updated User Data:", userData);
+            console.log("All Unique IDs:", userData.uniqueId);
+            console.log("All Emails:", userData.email);
+
+            alert("Registration successful!");
+        });
+
+    </script>
+</body>
+</html>

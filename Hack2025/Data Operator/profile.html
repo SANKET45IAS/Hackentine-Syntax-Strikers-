@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Task Manager with User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+    }
+    .user-profile {
+      width: 25%;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .user-profile img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+    .user-profile h2 {
+      margin: 10px 0;
+    }
+    .user-profile p {
+      margin: 5px 0;
+    }
+    .delete-account {
+      color: red;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .statistics {
+      margin-top: 20px;
+    }
+    .statistics h3 {
+      margin-bottom: 10px;
+    }
+    .kanban-board {
+      width: 70%;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .task {
+      background-color: #e2e2e2;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .task.completed {
+      background-color: #d4edda;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- User Profile Section -->
+    <div class="user-profile">
+      <img src="https://via.placeholder.com/100" alt="User Photo">
+      <h2>John Doe</h2>
+      <p><strong>Date of Birth:</strong> 1990-01-01</p>
+      <p><strong>Gender:</strong> Male</p>
+      <p class="delete-account" onclick="deleteAccount()">Delete My Account</p>
+      <!-- Statistics Section -->
+      <div class="statistics">
+        <h3>Task Statistics</h3>
+        <p><strong>Total Tasks:</strong> <span id="total-tasks">0</span></p>
+        <p><strong>Completed Tasks:</strong> <span id="completed-tasks">0</span></p>
+      </div>
+    </div>
+
+    <!-- Kanban Board Section -->
+    <div class="kanban-board">
+      <h2>Kanban Board</h2>
+      <div id="tasks">
+        <!-- Tasks will be dynamically added here -->
+      </div>
+      <button onclick="addTask()">Add Task</button>
+    </div>
+  </div>
+
+  <script>
+    let tasks = [];
+    let completedTasks = 0;
+
+    // Function to add a task
+    function addTask() {
+      const task = {
+        id: tasks.length + 1,
+        title: `Task ${tasks.length + 1}`,
+        completed: false,
+      };
+      tasks.push(task);
+      renderTasks();
+      updateStatistics();
+    }
+
+    // Function to mark a task as completed
+    function completeTask(taskId) {
+      const task = tasks.find((t) => t.id === taskId);
+      if (task && !task.completed) {
+        task.completed = true;
+        completedTasks++;
+        renderTasks();
+        updateStatistics();
+      }
+    }
+
+    // Function to render tasks
+    function renderTasks() {
+      const tasksContainer = document.getElementById('tasks');
+      tasksContainer.innerHTML = '';
+      tasks.forEach((task) => {
+        const taskElement = document.createElement('div');
+        taskElement.className = `task ${task.completed ? 'completed' : ''}`;
+        taskElement.innerHTML = `
+          <p>${task.title}</p>
+          ${task.completed ? '' : `<button onclick="completeTask(${task.id})">Complete</button>`}
+        `;
+        tasksContainer.appendChild(taskElement);
+      });
+    }
+
+    // Function to update statistics
+    function updateStatistics() {
+      document.getElementById('total-tasks').textContent = tasks.length;
+      document.getElementById('completed-tasks').textContent = completedTasks;
+    }
+
+    // Function to delete account
+    function deleteAccount() {
+      if (confirm('Are you sure you want to delete your account?')) {
+        alert('Account deleted successfully!');
+        // Add logic to delete the account from the backend
+      }
+    }
+
+    // Initial render
+    renderTasks();
+    updateStatistics();
+  </script>
+</body>
+</html>

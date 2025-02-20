@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Task Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .view1 {
+            transition: opacity 3s ease-in-out;
+            opacity: 1;
+            text-align: center;
+            padding: 20% 0;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .Home {
+            display: none;
+        }
+        .back {
+            background-color: #2C2C2C;
+        }
+        .fsize {
+            color: white;
+            font-style: italic;
+            font-weight: bold;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode .back {
+            background-color: #1C1C1C;
+        }
+        .dark-mode .fsize {
+            color: #ffffff;
+        }
+        .dark-mode .btn-light {
+            background-color: #333;
+            color: #fff;
+        }
+        .dark-mode .btn-light:hover {
+            background-color: #444;
+        }
+        .social-icons {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            background-color: rgb(255, 106, 0);
+        }
+        .social-icons a {
+            color: white;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 50%;
+            text-align: center;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        .social-icons a:hover {
+            background-color: #555;
+        }
+        .get-started-btn {
+            background-color: #FF7300;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .get-started-btn:hover {
+            background-color: #FF5600;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="view1">
+        <h1>Optimizing Time Management For a More Efficient INDIA</h1>
+        <img src="v1.jpg" alt="View 1 Image" style="width:50%">
+    </div>
+    <div class="Home">
+        <nav class="navbar navbar-expand-lg navbar-light back">
+            <div class="container-fluid">
+                <a class="navbar-brand fsize" href="#">Kanban Manager</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link fsize" href="#">LOGIN</a></li>
+                        <li class="nav-item">
+                            <button class="btn btn-light" id="darkModeToggle">
+                                <i class="fas fa-sun" id="dayIcon"></i>
+                                <i class="fas fa-moon d-none" id="nightIcon"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <h1 class="text-center text-white" style="background-color: rgb(255, 115, 0);">Kanban Task Manager</h1>
+        <div class="container text-center mt-4">
+            <button class="btn btn-primary btn-lg">As an Individual</button>
+            <button class="btn btn-success btn-lg">As a Team</button>
+            <div class="mt-4">
+                <p class="display-5">New To Kanban Management?</p>
+                <p class="display-5">Let's Get Started</p>
+                <button class="get-started-btn">REGISTER</button>
+                <h5>Trusted by Individuals and groups</h5>
+            </div>
+        </div>
+        <footer class="footer" style="margin-top: 180px;">
+            <div class="container">
+                <div class="newsletter-signup">
+                    <input type="email" placeholder="Enter your email">
+                    <button>Subscribe</button>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2025 Kanban Task Manager. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        const view1 = document.querySelector(".view1");
+        const Home = document.querySelector(".Home");
+        function V1Display() {
+            if (view1) {
+                view1.classList.add("hidden");
+                setTimeout(() => {
+                    view1.style.display = "none";
+                    Home.style.display = "block";
+                    sessionStorage.setItem("view1Displayed", "true");
+                }, 3000);
+            }
+        }
+        if (sessionStorage.getItem("view1Displayed")) {
+            view1.style.display = "none";
+            Home.style.display = "block";
+        } else {
+            setTimeout(V1Display, 1400);
+        }
+        document.getElementById("darkModeToggle").addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+            document.getElementById("dayIcon").classList.toggle("d-none");
+            document.getElementById("nightIcon").classList.toggle("d-none");
+        });
+    </script>
+</body>
+</html>
